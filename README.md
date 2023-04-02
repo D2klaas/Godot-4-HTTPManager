@@ -3,10 +3,11 @@
 A feature rich Godot HTTP manager addon
 
 ## Features
-* multiply parrallel request queue managment
+* multiple simultanious requests
+* queue managment
 * add GET and POST variables
 * add upload files via POST request
 * decodes response on mime-type
-* custom decoders for mime-type
+* custom decoders for mime-types
 * automatic progress display
 
