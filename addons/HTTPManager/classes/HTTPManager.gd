@@ -156,7 +156,7 @@ func _ready():
 ##returns HTTPManagerJob
 func job( url:String ) -> HTTPManagerJob:
 	var job = HTTPManagerJob.new()
-	job.manager = self
+	job._manager = self
 	job.url = url
 	return job
 

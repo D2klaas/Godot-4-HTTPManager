@@ -233,6 +233,7 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 		forced_charset = force_charset
 	
 	if download_filepath != "":
+		DirAccess.make_dir_recursive_absolute(download_filepath.get_base_dir())
 		var file = FileAccess.open(download_filepath, FileAccess.WRITE)
 		if file:
 			file.store_buffer( body )
