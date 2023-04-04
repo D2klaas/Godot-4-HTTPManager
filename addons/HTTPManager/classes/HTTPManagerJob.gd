@@ -47,6 +47,43 @@ func add_post( name, value=null ) -> HTTPManagerJob:
 	return self
 
 
+##add a file to the POST request
+## name: name of the POST field
+## path: path to the file to add
+## mime: mime-type of the file
+func add_post_file( name:String, filepath:String, mime:String="application/octet-stream" ) -> HTTPManagerJob:
+	request_files.append({
+		'name': name,
+		'path': filepath,
+		'mime': mime
+	})
+	
+	return self
+
+
+##add a buffer to the POST request
+## name: name of the POST field
+## path: path to the file to add
+## mime: mime-type of the file
+func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream" ) -> HTTPManagerJob:
+	request_files.append({
+		'name': name,
+		'buffer': buffer,
+		'mime': mime
+	})
+	
+	return self
+
+
+func add_header( name, value=null ) -> HTTPManagerJob:
+	if name is String and value != null:
+		request_headers[name] = str(value)
+	elif name is Dictionary:
+		request_headers.merge( name )
+	
+	return self
+
+
 ##adds auth-basic header to the request
 ##returns self for function-chaining
 func auth_basic( name:String, password:String ):
@@ -86,43 +123,6 @@ func unsafe() -> HTTPManagerJob:
 ##add REQUEST a header with ( name:String, value:Varying )
 ##or add headers with ( headers:Dictionary )
 ##returns self for function-chaining
-func add_header( name, value=null ) -> HTTPManagerJob:
-	if name is String and value != null:
-		request_headers[name] = str(value)
-	elif name is Dictionary:
-		request_headers.merge( name )
-	
-	return self
-
-
-##add a file to the POST request
-## name: name of the POST field
-## path: path to the file to add
-## mime: mime-type of the file
-func add_post_file( name:String, filepath:String, mime:String="application/octet-stream" ) -> HTTPManagerJob:
-	request_files.append({
-		'name': name,
-		'path': filepath,
-		'mime': mime
-	})
-	
-	return self
-
-
-##add a buffer to the POST request
-## name: name of the POST field
-## path: path to the file to add
-## mime: mime-type of the file
-func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream" ) -> HTTPManagerJob:
-	request_files.append({
-		'name': name,
-		'buffer': buffer,
-		'mime': mime
-	})
-	
-	return self
-
-
 ##sends this job to the queue
 ##the response will be saved to a file when successfull
 ## filepath: filepath to where to store the file
@@ -325,9 +325,9 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 			continue
 		if cb.has("code") and cb.code != response_code:
 			continue
-		if cb.has("not_result") and cb.result == result:
+		if cb.has("not_result") and cb.not_result == result:
 			continue
-		if cb.has("not_code") and cb.code == response_code:
+		if cb.has("not_code") and cb.not_code == response_code:
 			continue
 		if cb.has("callback"):
 			cb.callback.call( response )
