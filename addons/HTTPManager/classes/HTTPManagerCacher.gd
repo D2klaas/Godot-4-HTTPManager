@@ -70,7 +70,7 @@ func get_cache_name( url:String ):
 
 func extract_cache_info( str:String ) -> Dictionary:
 	var result = {}
-	var hs = str.split(";",false)
+	var hs = str.split("\r\n",false)
 	for ns in hs:
 		var n = ns.split(":",true,1)
 		result[n[0]] = n[1]
@@ -81,6 +81,6 @@ func extract_cache_info( str:String ) -> Dictionary:
 func encode_cache_info( cache_info:Dictionary ) -> String:
 	var result = ""
 	for i in cache_info:
-		result += i+": "+cache_info[i]+";"
+		result += i+": "+cache_info[i]+"\r\n"
 	
 	return result
