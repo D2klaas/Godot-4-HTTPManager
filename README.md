@@ -10,7 +10,7 @@ A feature rich Godot HTTP manager addon
 * decodes response based on mime-type
 * custom decoders for mime-types
 * automatic progress display
-* web cache based on etag and modified since headers
+* web cache based on etag and modified-since headers
 
 ## Imstall
 Download files and add them to your addons folder in your godot project.
@@ -383,25 +383,30 @@ most methods return self for method chaining
   a callback can be added thats fires on completion (like add_callback) whether call is successful or not
   
   
-
 ## Result Object
-All callbacks will be called with a result object (decoder).\
+All callbacks of jobs will be called with a result object (decoder).\
 The object provides the following informations:\
+
+**Properties**
 
 * request_headers:Dictionary
 * request_get:Dictionary
 * request_post:Dictionary
 * request_files:Array[Dictionary]
-* ---
+---
 * result:int
-* ---
+---
 * response_code:int
 * response_headers:Dictionary
 * response_body:PackedByteArray
 * response_mime:Array
 * response_charset:String
-* ---
+---
 * forced_mime:Array[String]
 * forced_charset:String
 
-The fetch() function provides the mime-type specific result or null if it fails to decode request result
+**Methods**
+
+* fetch()\
+  will return the decoded document
+
