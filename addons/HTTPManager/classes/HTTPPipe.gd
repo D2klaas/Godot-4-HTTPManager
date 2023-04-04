@@ -20,9 +20,9 @@ func dispatch( _job:HTTPManagerJob ):
 	is_busy = true
 	job = _job
 	
-	var url = job.url
-	if job.request_get.size() > 0:
-		url += "?" + manager.query_string_from_dict(job.request_get)
+	if manager.use_cache and job.use_cache:
+		manager.cacher.cache_request( job )
+	var url = job.get_url()
 	
 	manager.d("starting request "+url)
 	
@@ -41,7 +41,11 @@ func dispatch( _job:HTTPManagerJob ):
 		job.add_header("Content-Type", 'multipart/form-data;boundary="' + manager.content_boundary + '"')
 		
 		for file in job.request_files:
-			var file_content = FileAccess.get_file_as_bytes( file.path )
+			var file_content:PackedByteArray
+			if file.has("path"):
+				file_content = FileAccess.get_file_as_bytes( file.path )
+			if file.has("buffer"):
+				file_content = file.buffer
 			body.append_array(("--"+manager.content_boundary).to_utf8_buffer())
 			body.append_array("\r\n".to_utf8_buffer())
 			body.append_array(('Content-Disposition: form-data; name="' + file.name +'"; filename="'+file.path.get_file()+'"').to_utf8_buffer())

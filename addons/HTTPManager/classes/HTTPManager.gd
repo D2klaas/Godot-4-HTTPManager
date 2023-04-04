@@ -31,6 +31,10 @@ class_name HTTPManager
 @export var timeout:float = 0
 ##maximal times the manager retries to request the job after failed connection
 @export var max_retries:int = 3
+##use caching
+@export var use_cache:bool = false
+## cache directory
+@export var cache_directory:String = "user://http-manager-cache"
 ##automatically go into pause mode when a job failed
 @export var pause_on_failure:bool = true
 ##the interval delay to update progress scene and fire progress signal
@@ -42,6 +46,8 @@ class_name HTTPManager
 ##print debug messages
 @export var print_debug:bool = false
 
+##cache control module
+var cacher = null
 
 var _HTTPPipe = preload("res://addons/HTTPManager/classes/HTTPPipe.gd")
 var _pipes:Array[HTTPRequest] = []
@@ -139,6 +145,10 @@ func _ready():
 	add_child( _progress_scene )
 	_progress_scene.hide()
 	
+	#add the progress scene
+	cacher = load("res://addons/HTTPManager/classes/HTTPManagerCacher.gd").new()
+	cacher.manager = self
+	
 	#create the http _pipes
 	for i in parallel_connections_count:
 		var pipe = _HTTPPipe.new()
@@ -158,6 +168,8 @@ func job( url:String ) -> HTTPManagerJob:
 	var job = HTTPManagerJob.new()
 	job._manager = self
 	job.url = url
+	#set defaults for jobs
+	job.use_cache = use_cache
 	return job
 
 
@@ -249,6 +261,19 @@ func unpause():
 	is_paused = false
 	emit_signal("unpaused")
 	dispatch()
+
+
+static func parse_url( url:String ):
+	var result = {}
+	var reg = RegEx.new()
+	reg.compile("^(.*)\\:\\/\\/([^\\/]*)\\/(.*)")
+	var res = reg.search( url )
+	if res and res.strings.size() == 4:
+		result.scheme = res.strings[1] 
+		result.host = res.strings[2]
+		result.query = res.strings[3]
+	
+	return result
 
 
 func d( msg ):

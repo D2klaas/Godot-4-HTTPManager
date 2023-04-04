@@ -1,11 +1,15 @@
 extends Object
 
+var request_url:String
+var request_query:String
 var request_headers:Dictionary
 var request_get:Dictionary
 var request_post:Dictionary
 var request_files:Array[Dictionary]
 
 var result:int
+var from_cache:bool = false
+
 var response_code:int
 var response_headers:Dictionary
 var response_body:PackedByteArray

@@ -15,6 +15,7 @@ var request_get_query:String
 var unsafe_ssl:bool =false
 var force_mime:String
 var force_charset:String
+var use_cache:bool = true
 
 var retries:int = 0
 var download_filepath:String
@@ -50,6 +51,13 @@ func add_post( name, value=null ) -> HTTPManagerJob:
 ##returns self for function-chaining
 func auth_basic( name:String, password:String ):
 	add_header("Authorization:","Basic "+Marshalls.utf8_to_base64(str(name, ":", password)))
+	return self
+
+
+##force a specific mime-type in response
+##returns self for function-chaining
+func cache( _use_cache:bool=true ) -> HTTPManagerJob:
+	use_cache = _use_cache
 	return self
 
 
@@ -101,6 +109,20 @@ func add_post_file( name:String, filepath:String, mime:String="application/octet
 	return self
 
 
+##add a buffer to the POST request
+## name: name of the POST field
+## path: path to the file to add
+## mime: mime-type of the file
+func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream" ) -> HTTPManagerJob:
+	request_files.append({
+		'name': name,
+		'buffer': buffer,
+		'mime': mime
+	})
+	
+	return self
+
+
 ##sends this job to the queue
 ##the response will be saved to a file when successfull
 ## filepath: filepath to where to store the file
@@ -144,6 +166,11 @@ func on_success( callback:Callable ) -> HTTPManagerJob:
 		"code": 200,
 		"callback": callback
 	})
+	callbacks.append({
+		"result": HTTPRequest.RESULT_SUCCESS,
+		"code": 304,
+		"callback": callback
+	})
 	
 	return self
 
@@ -153,6 +180,13 @@ func on_success_set( object:Object, property:String ) -> HTTPManagerJob:
 	callbacks.append({
 		"result": HTTPRequest.RESULT_SUCCESS,
 		"code": 200,
+		"do": "set",
+		"object": object,
+		"property": property,
+	})
+	callbacks.append({
+		"result": HTTPRequest.RESULT_SUCCESS,
+		"code": 304,
 		"do": "set",
 		"object": object,
 		"property": property,
@@ -192,6 +226,13 @@ func on_result( result:int, callback:Callable ) -> HTTPManagerJob:
 	return self
 
 
+func get_url():
+	var _url = url
+	if request_get.size() > 0:
+		_url += "?" + _manager.query_string_from_dict(request_get)
+	return _url
+
+
 func dispatch( result:int, response_code:int, headers:PackedStringArray, body:PackedByteArray ):
 	_manager.d("job "+url+" done")
 	
@@ -201,6 +242,14 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	var response_charset:String
 	var forced_mime:Array
 	var forced_charset:String
+	var response_from_cache:bool
+	
+	#modify response by cahe control
+	if _manager.use_cache and use_cache:
+		var cache_result = _manager.cacher.cache_response( self, result, response_code, headers, body )
+		headers = cache_result.headers
+		body = cache_result.body
+		response_from_cache = cache_result.from_cache
 	
 	for header in headers:
 		var h = _string_to_header( header )
@@ -232,12 +281,6 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	if force_charset != "":
 		forced_charset = force_charset
 	
-	if download_filepath != "":
-		DirAccess.make_dir_recursive_absolute(download_filepath.get_base_dir())
-		var file = FileAccess.open(download_filepath, FileAccess.WRITE)
-		if file:
-			file.store_buffer( body )
-	
 	var response = null
 	var mime = ["","",""]
 	if response_mime.size() == 3:
@@ -254,17 +297,28 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	
 	response_body = body
 	
+	response.request_url = url
+	response.request_query = get_url()
 	response.request_headers = request_headers
 	response.request_get = request_get
 	response.request_post = request_post
 	response.request_files = request_files
-
+	
 	response.result = result
+	response.from_cache = response_from_cache
+	
 	response.response_code = response_code
 	response.response_headers = response_headers
 	response.response_body = response_body
 	response.response_mime = response_mime
 	response.response_charset = response_charset
+	
+	#save to download file
+	if download_filepath != "":
+		DirAccess.make_dir_recursive_absolute(download_filepath.get_base_dir())
+		var file = FileAccess.open(download_filepath, FileAccess.WRITE)
+		if file:
+			file.store_buffer( response.response_body )
 	
 	for cb in callbacks:
 		if cb.has("result") and cb.result != result:
@@ -282,13 +336,16 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 		if cb.has("do") and cb.do == "set":
 			if is_instance_valid( cb.object ):
 				cb.object.set(cb.property, response.fetch())
-			
-	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+	
+	if result == HTTPRequest.RESULT_SUCCESS and (response_code == 200 or response_code == 304):
 		_manager.emit_signal("job_succeded",self)
 	else:
 		if _manager.pause_on_failure:
 			_manager.pause()
 		_manager.emit_signal("job_failed",self)
+	
+	_manager.emit_signal("job_completed",self)
+
 
 
 func _string_to_header( header:String ):
@@ -296,5 +353,6 @@ func _string_to_header( header:String ):
 	if p.size() == 2:
 		p[0] = p[0].to_lower()
 		return p
+	return null
 
 
