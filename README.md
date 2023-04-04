@@ -13,11 +13,11 @@ A feature rich Godot HTTP manager addon
 * web cache based on etag and modified-since headers
 
 ## Imstall
-Download files and add them to your addons folder in your godot project.
-Enable the plugin in prohect-settings
+Download files and add them to your addons folder in your godot project.\
+Enable the plugin in prohect-settings.
 
 ## Usage
-Create a HTTPManager node in your scene-tree
+Create a HTTPManager node in your scene-tree\
 ($HTTPManager referres to the created node)
 
 <details>
@@ -197,7 +197,7 @@ Name it "mediatype_subtype.gd"\
 If you name it "application_custom.gd" the decoder will be evoked when effective mime is "application/custom"\
 If you name it "application.gd" the decoder will be evoked when mime is from mediatype "application", but will not be used when there is the more specific decoder "application_custom" is present.\
 The script should extend "res://addons/HTTPManager/classes/decoders/application_octet-stream.gd" or any usefull subclass\
-You should overwrite the fetch() function with your decoding. Have a look into the existing decoders (especially image_texture.gd for forced mime-types)\
+You should overwrite the fetch() function with your decoding. Have a look into the existing decoders (especially image_texture.gd for forced mime-types)
 
 ## Documentation
 
@@ -206,96 +206,96 @@ The manager node that runs the queue
 
 **Properties**
 * parallel_connections_count:int = 5\
-  number of parallel http connections
-  Cannot be changed after _ready state is reachead!
-
+  _number of parallel http connections\
+  Cannot be changed after ready state is reachead!_
+  
 * download_chunk_size:int = 65536\
-  The size of the buffer used and maximum bytes to read per iteration. See HTTPClient.read_chunk_size.\
-  Set this to a lower value (e.g. 4096 for 4 KiB) when downloading small files to decrease memory usage at the cost of download speeds.
+  _The size of the buffer used and maximum bytes to read per iteration. See HTTPClient.read_chunk_size.\
+  Set this to a lower value (e.g. 4096 for 4 KiB) when downloading small files to decrease memory usage at the cost of download speeds._
 
 * use_threads:bool = false\
-  If true, multithreading is used to improve performance.
+  _If true, multithreading is used to improve performance._
 
 * accept_gzip:bool = true\
-  If true, this header will be added to each request: Accept-Encoding: gzip, deflate telling servers that it's okay to compress response bodies.
+  _If true, this header will be added to each request: Accept-Encoding: gzip, deflate telling servers that it's okay to compress response bodies._
 
 * body_size_limit:int = -1\
-  Maximum allowed size for response bodies. If the response body is compressed, this will be used as the maximum allowed size for the decompressed body.\
+  _Maximum allowed size for response bodies. If the response body is compressed, this will be used as the maximum allowed size for the decompressed body.\_
   
 * max_redirects:int = 8\
-  Maximum number of allowed redirects.
+  _Maximum number of allowed redirects._
   
 * timeout:float = 0\
-  If set to a value greater than 0.0 before the request starts, the HTTP request will time out after timeout seconds have passed and the request is not completed yet. For small HTTP requests such as REST API usage, set timeout to a value between 10.0 and 30.0 to prevent the application from getting stuck if the request fails to get a response in a timely manner. For file downloads, leave this to 0.0 to prevent the download from failing if it takes too much time.
+  _If set to a value greater than 0.0 before the request starts, the HTTP request will time out after timeout seconds have passed and the request is not completed yet. For small HTTP requests such as REST API usage, set timeout to a value between 10.0 and 30.0 to prevent the application from getting stuck if the request fails to get a response in a timely manner. For file downloads, leave this to 0.0 to prevent the download from failing if it takes too much time._
 
 * max_retries:int = 3\
-  maximal times the manager retries to request the job after failed connection
+  _maximal times the manager retries to request the job after failed connection_
   
 * use_cache:bool = false\
-  use caching
+  _use caching_
 
 * cache_directory:String = "user://http-manager-cache"\
-  cache directory
+  _cache directory_
   
 * pause_on_failure:bool = true\
-  automatically go into pause mode when a job failed
+  _automatically go into pause mode when a job failed_
   
 * signal_progress_interval:float = 0.5\
-  the interval delay to update progress scene and fire progress signal
+  _the interval delay to update progress scene and fire progress signal_
 
 * display_progress:bool = false\
-  automatically display the progress scene when the queue is progressed
+  _automatically display the progress scene when the queue is progressed_
 
 * progress_scene:PackedScene = null\
-  custom scene to display when the queue is progressed
+  _custom scene to display when the queue is progressed_
 
 * print_debug:bool = false\
-  print debug messages
+  _print debug messages_
 
 * cacher = null\
-  instance of the caching class
-  on _ready the "HTTPManagerCacher.gd" is used
+  _instance of the caching class\
+  on _ready the "HTTPManagerCacher.gd" is used_
 
 **Signals**
 
 * paused\
-  emited when the manager goes into pause mode
+  _emited when the manager goes into pause mode_
   
 * unpaused()
-  emited when the manager unpause and resumes the queue
+  _emited when the manager unpause and resumes the queue_
 
 * completed()\
-  emited when all jobs in the queue has finished
+  _emited when all jobs in the queue has finished_
   
 * progress( assigned_files, current_files, total_bytes, current_bytes )\
-  emited when progressed interval fires\
+  _emited when progressed interval fires\
   assigned_files before last completed or clear has been reached/called\
   current_files number of files still in cue\
   total_bytes to download of all jobs currently worked on\
-  current_bytes downloaded of all jobs currently worked on\
+  current_bytes downloaded of all jobs currently worked on_
   
 * job_failed( job:HTTPManagerJob )\
-  emited when a job failed\
-  on connection error or any result-code other than 200 or 304
+  _emited when a job failed\
+  on connection error or any result-code other than 200 or 304_
 
 * job_succeded( job:HTTPManagerJob )\
-  emited when a job succeeded\
-  result-code is 200 or 304
+  _emited when a job succeeded\
+  result-code is 200 or 304_
   
 * job_completed( job:HTTPManagerJob )\
-  emited when a job is completed successfully or not
+  _emited when a job is completed successfully or not_
 
 **Methods**
 
 * job( url:String ) -> HTTPManagerJob\
-  creates a job
+  _creates a job_
 
 * pause()\
-  pauses queue execution\
-  running requests will complete but no further requests will be started
+  _pauses queue execution\
+  running requests will complete but no further requests will be started_
 
 * unpause()\
-  resumes queue processing
+  _resumes queue processing_
 
 ### HTTPManagerJob
 A http request object that will be stored in the queue
@@ -313,74 +313,74 @@ there are no signals for this object, use HTTPManager signals or the callback fu
 most methods return self for method chaining
 
 * func add_get( name, value=null ) -> HTTPManagerJob:\
-  adds a GET field to the request\
+  _adds a GET field to the request\
   you can add fields with name of field an value of field\
   or a Dictionary containing fieldname:fieldvalue pairs\
-  add_get( "fieldname", "fieldvalue" ) or add_get( {"fieldname":"fieldvalue"} )
+  add_get( "fieldname", "fieldvalue" ) or add_get( {"fieldname":"fieldvalue"} )_
 
 * func add_post( name, value=null ) -> HTTPManagerJob:\
-  adds a POST field to the request\
+  _adds a POST field to the request\
   you can add fields with name of field an value of field\
   or a Dictionary containing fieldname:fieldvalue pairs\
-  add_get( "fieldname", "fieldvalue" ) or add_get( {"fieldname":"fieldvalue"} )
+  add_get( "fieldname", "fieldvalue" ) or add_get( {"fieldname":"fieldvalue"} )_
 
 * func add_post_file( name:String, filepath:String, mime:String="application/octet-stream" ) -> HTTPManagerJob\
-  adds a FILE(filepath) to the POST section(request body) with fieldname(name) and the mime-type(mime)\
+  _adds a FILE(filepath) to the POST section(request body) with fieldname(name) and the mime-type(mime)_
 
 * func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream" ) -> HTTPManagerJob\
-  adds a binary buffer(buffer) to the POST section(request body) with fieldname(name) and the mime-type(mime)\
+  _adds a binary buffer(buffer) to the POST section(request body) with fieldname(name) and the mime-type(mime)_
 
 * add_header( name, value=null ) -> HTTPManagerJob\
-  adds a HEADER to the request\
+  _adds a HEADER to the request\
   you can add headers with name of header an value of header\
   or a Dictionary containing headername:headervalue pairs\
   add_header( "headername", "headervalue" ) or add_header( {"headername":"headervalue"} )\
-  headers will be overwritten when set
+  headers will be overwritten when set_
   
 * auth_basic( name:String, password:String )\
-  adds auth basic credentials to the request header
+  _adds auth basic credentials to the request header_
 
 * cache( use_cache:bool=true ) -> HTTPManagerJob\
-  wether to use cache for this request or not\
-  caching must be enabled in manager to be used
+  _whether to use cache for this request or not\
+  caching must be enabled in manager to be used_
 
 * mime( mime:String ) -> HTTPManagerJob\
-  forces a specific mime-type to be used on decoding the response of the server
+  _forces a specific mime-type to be used on decoding the response of the server_
 
 * charset( charset:String ) -> HTTPManagerJob\
-  forces a specific charset to be used on decoding the response of the server\
-  only used when decoding text
+  _forces a specific charset to be used on decoding the response of the server\
+  only used when decoding text_
 
 * unsafe() -> HTTPManagerJob\
-  do not validate TLS\
-  this makes the call to https more unsafe as the certificate of the server will not be checkedß
+  _do not validate TLS\
+  this makes the call to https more unsafe as the certificate of the server will not be checked_
   
 * add_callback( callback = null ) -> HTTPManagerJob\
-  adds a callback that will be fired after completion
+  _adds a callback that will be fired after completion_
 
 * on_success( callback:Callable ) -> HTTPManagerJob\
-  adds callback to be fired when http-response-code succeeded with code 200 or 304
+  _adds callback to be fired when http-response-code succeeded with code 200 or 304_
 
 * on_success_set( object:Object, property:String ) -> HTTPManagerJob\
-  sets property of object with the result  of the call on success
+  _sets property of object with the result  of the call on success_
 
 * on_failure( callback:Callable ) -> HTTPManagerJob\
-  adds callback to be fired when http-response-code is not 200 or 304 or any connection error occured after all retries
+  _adds callback to be fired when http-response-code is not 200 or 304 or any connection error occured after all retries_
 
 * on_code( code:int, callback:Callable ) -> HTTPManagerJob\
-  adds callback to be fired when http-response-code is code
+  _adds callback to be fired when http-response-code is code_
 
 * on_result( result:int, callback:Callable ) -> HTTPManagerJob\
-  adds callback to be fired when connections result is result
+  _adds callback to be fired when connections result is result_
  
 * get( callback = null )\
-  send the job to the queue and start dispatching\
-  a callback can be added thats fires on completion (like add_callback) whether call is successful or not
+  _send the job to the queue and start dispatching\
+  a callback can be added thats fires on completion (like add_callback) whether call is successful or not_
 
 * download( filepath:String, callback = null )\
-  send the job to the queue and start dispatching\
+  _send the job to the queue and start dispatching\
   saves the response-body as file in filepath\
-  a callback can be added thats fires on completion (like add_callback) whether call is successful or not
+  a callback can be added thats fires on completion (like add_callback) whether call is successful or not_
   
   
 ## Result Object
@@ -408,5 +408,5 @@ The object provides the following informations:\
 **Methods**
 
 * fetch()\
-  will return the decoded document
+  _will return the decoded document_
 
