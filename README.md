@@ -396,6 +396,8 @@ The object provides the following informations:\
 ---
 * `result:int`\
   the connections result (see HTTPRequest class of godot)
+* `from_cache:bool`\
+  whether the body is from the server or taken from the cache
 ---
 * `response_code:int`
 * `response_headers:Dictionary`
@@ -409,6 +411,7 @@ The object provides the following informations:\
   mime-type forced by job
 * `forced_charset:String`
   charset forced by job
+
 
 **Methods**
 
