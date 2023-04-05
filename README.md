@@ -3,16 +3,16 @@
 A feature rich Godot HTTP manager addon
 
 ## Features
-* multiple simultanious requests
+* multiple simultaneous requests
 * queue managment
 * add GET and POST variables
-* add upload files via POST request
+* add upload files or buffers via POST request
 * decodes response based on mime-type
 * custom decoders for mime-types
 * automatic progress display
 * web cache based on etag and modified-since headers
 
-## Imstall
+## Install
 Download files and add them to your addons folder in your godot project.\
 Enable the plugin in prohect-settings.
 
