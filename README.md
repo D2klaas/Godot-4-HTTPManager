@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/plugin%20version-0.3.0-blue)](https://github.com/D2klaas/dzPortals)
+[![version](https://img.shields.io/badge/plugin%20version-0.3.1-blue)](https://github.com/D2klaas/dzPortals)
 # Godot 4 - HTTPManager
 A feature rich Godot HTTP manager addon
 
