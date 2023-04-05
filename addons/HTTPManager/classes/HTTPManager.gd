@@ -18,17 +18,43 @@ class_name HTTPManager
 @export var parallel_connections_count:int = 5
 ##The size of the buffer used and maximum bytes to read per iteration. See HTTPClient.read_chunk_size.
 ##Set this to a lower value (e.g. 4096 for 4 KiB) when downloading small files to decrease memory usage at the cost of download speeds.
-@export var download_chunk_size:int = 65536
+@export var download_chunk_size:int = 65536 : 
+	set( value ):
+		download_chunk_size = value
+		for pipe in _pipes:
+			pipe.download_chunk_size = value
 ##If true, multithreading is used to improve performance.
-@export var use_threads:bool = false
+@export var use_threads:bool = false :
+	set( value ):
+		use_threads = value
+		for pipe in _pipes:
+			pipe.use_threads = value
 ##If true, this header will be added to each request: Accept-Encoding: gzip, deflate telling servers that it's okay to compress response bodies.
-@export var accept_gzip:bool = true
+@export var accept_gzip:bool = true :
+	set( value ):
+		accept_gzip = value
+		for pipe in _pipes:
+			pipe.accept_gzip = value
 ##Maximum allowed size for response bodies. If the response body is compressed, this will be used as the maximum allowed size for the decompressed body.
-@export var body_size_limit:int = -1
+@export var body_size_limit:int = -1 :
+	set( value ):
+		body_size_limit = value
+		for pipe in _pipes:
+			pipe.body_size_limit = value
+
 ##Maximum number of allowed redirects.
-@export var max_redirects:int = 8
+@export var max_redirects:int = 8 :
+	set( value ):
+		max_redirects = value
+		for pipe in _pipes:
+			pipe.max_redirects = value
+
 ##If set to a value greater than 0.0 before the request starts, the HTTP request will time out after timeout seconds have passed and the request is not completed yet. For small HTTP requests such as REST API usage, set timeout to a value between 10.0 and 30.0 to prevent the application from getting stuck if the request fails to get a response in a timely manner. For file downloads, leave this to 0.0 to prevent the download from failing if it takes too much time.
-@export var timeout:float = 0
+@export var timeout:float = 0 :
+	set( value ):
+		timeout = value
+		for pipe in _pipes:
+			pipe.timeout = value
 ##maximal times the manager retries to request the job after failed connection
 @export var max_retries:int = 3
 ##use caching
@@ -98,6 +124,84 @@ const _result_error_string = {
 	8: "REQUEST FAILED",
 	11: "REDIRECT LIMIT REACHED",
 	12: "TIMEOUT"
+}
+
+const common_mime_types = {
+	"aac": "audio/aac",
+	"abw": "application/x-abiword",
+	"arc": "application/x-freearc",
+	"avif": "image/avif",
+	"avi": "video/x-msvideo",
+	"azw": "application/vnd.amazon.ebook",
+	"bin": "application/octet-stream",
+	"bmp": "image/bmp",
+	"bz": "application/x-bzip",
+	"bz2": "application/x-bzip2",
+	"cda": "application/x-cdf",
+	"csh": "application/x-csh",
+	"css": "text/css",
+	"csv": "text/csv",
+	"doc": "application/msword",
+	"docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	"eot": "application/vnd.ms-fontobject",
+	"epub": "application/epub+zip",
+	"gz": "application/gzip",
+	"gif": "image/gif",
+	"htm": "text/html",
+	"html": "text/html",
+	"ico": "image/vnd.microsoft.icon",
+	"ics": "text/calendar",
+	"jar": "application/java-archive",
+	"jpeg": "image/jpeg",
+	"jpg": "image/jpeg",
+	"js": "text/javascript",
+	"json": "application/json",
+	"jsonld": "application/ld+json",
+	"midi": "audio/midi, audio/x-midi",
+	"mid": "audio/midi, audio/x-midi",
+	"mjs": "text/javascript",
+	"mp3": "audio/mpeg",
+	"mp4": "video/mp4",
+	"mpeg": "video/mpeg",
+	"mpkg": "application/vnd.apple.installer+xml",
+	"odp": "application/vnd.oasis.opendocument.presentation",
+	"ods": "application/vnd.oasis.opendocument.spreadsheet",
+	"odt": "application/vnd.oasis.opendocument.text",
+	"oga": "audio/ogg",
+	"ogv": "video/ogg",
+	"ogx": "application/ogg",
+	"opus": "audio/opus",
+	"otf": "font/otf",
+	"png": "image/png",
+	"pdf": "application/pdf",
+	"php": "application/x-httpd-php",
+	"ppt": "application/vnd.ms-powerpoint",
+	"pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+	"rar": "application/vnd.rar",
+	"rtf": "application/rtf",
+	"sh": "application/x-sh",
+	"svg": "image/svg+xml",
+	"tar": "application/x-tar",
+	"tif, .tiff": "image/tiff",
+	"ts": "video/mp2t",
+	"ttf": "font/ttf",
+	"txt": "text/plain",
+	"vsd": "application/vnd.visio",
+	"wav": "audio/wav",
+	"weba": "audio/webm",
+	"webm": "video/webm",
+	"webp": "image/webp",
+	"woff": "font/woff",
+	"woff2": "font/woff2",
+	"xhtml": "application/xhtml+xml",
+	"xls": "application/vnd.ms-excel",
+	"xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	"xml": "application/xml",
+	"xul": "application/vnd.mozilla.xul+xml",
+	"zip": "application/zip",
+	"3gp": "video/3gpp",
+	"3g2": "video/3gpp2",
+	"7z": "application/x-7z-compressed"
 }
 
 ##emited when the manager goes into pause mode
@@ -264,7 +368,11 @@ func unpause():
 
 
 static func parse_url( url:String ):
-	var result = {}
+	var result = {
+		"scheme": "__empty__",
+		"host": "__empty__",
+		"query": "__empty__"
+	}
 	var reg = RegEx.new()
 	reg.compile("^(.*)\\:\\/\\/([^\\/]*)\\/(.*)")
 	var res = reg.search( url )
@@ -272,12 +380,27 @@ static func parse_url( url:String ):
 		result.scheme = res.strings[1] 
 		result.host = res.strings[2]
 		result.query = res.strings[3]
+	elif res and res.strings.size() == 3:
+		result.scheme = res.strings[1] 
+		result.host = res.strings[2]
 	
 	return result
+
+
+static func auto_mime( filename:String ):
+	var ext = filename.get_extension()
+	if common_mime_types.has(ext):
+		return common_mime_types[ext]
+	else:
+		return "application/octet-stream"
 
 
 func d( msg ):
 	if print_debug:
 		print( "HTTPManager: "+str(msg) )
+
+
+static func e( msg ):
+	printerr( "HTTPManager: "+str(msg) )
 
 

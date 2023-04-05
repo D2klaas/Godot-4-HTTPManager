@@ -33,21 +33,29 @@ func cache_response( job:HTTPManagerJob, result:int, response_code:int, headers:
 			cache.body = file.get_buffer(file.get_length() - file.get_position())
 			cache.from_cache = true
 			return cache
+		else:
+			manager.e("got code 304 but cachefile not found")
 	else:
 		cache.from_cache = false
 		cache.body = body
 	
 	#parse headers for extra infos for caching
 	var cache_headers:Dictionary
+	var cachable:bool = false
 	for header in headers:
 		var h = job._string_to_header( header )
 		match h[0].to_lower():
 			"etag":
 				cache_headers["if-none-match"] = h[1]
+				cachable = true
 			"last-modified":
 				cache_headers["if-modified-since"] = h[1]
+				cachable = true
 			"content-type":
 				cache_headers["content-type"] = h[1]
+	
+	if not cachable:
+		return cache
 	
 	#save cache with extra headers
 	DirAccess.make_dir_recursive_absolute(filepath.get_base_dir())
@@ -55,7 +63,9 @@ func cache_response( job:HTTPManagerJob, result:int, response_code:int, headers:
 	if file:
 		file.store_pascal_string( encode_cache_info(cache_headers))
 		file.store_buffer( body )
-	
+	else:
+		manager.e("cachefile could not be written in \""+filepath+"\"")
+		
 	return cache
 
 
@@ -84,3 +94,6 @@ func encode_cache_info( cache_info:Dictionary ) -> String:
 		result += i+": "+cache_info[i]+"\r\n"
 	
 	return result
+
+
+

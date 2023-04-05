@@ -18,6 +18,7 @@ var force_charset:String
 var use_cache:bool = true
 
 var retries:int = 0
+var success:bool = false
 var download_filepath:String
 var callbacks:Array[Dictionary]
 var error:int
@@ -51,10 +52,16 @@ func add_post( name, value=null ) -> HTTPManagerJob:
 ## name: name of the POST field
 ## path: path to the file to add
 ## mime: mime-type of the file
-func add_post_file( name:String, filepath:String, mime:String="application/octet-stream" ) -> HTTPManagerJob:
+func add_post_file( name:String, filepath:String, mime:String="auto" ) -> HTTPManagerJob:
+	if mime == "auto":
+		mime = HTTPManager.auto_mime(filepath)
+	else:
+		mime = "application/octet-stream"
+	
 	request_files.append({
 		'name': name,
 		'path': filepath,
+		'basename': filepath.get_file(),
 		'mime': mime
 	})
 	
@@ -64,17 +71,22 @@ func add_post_file( name:String, filepath:String, mime:String="application/octet
 ##add a buffer to the POST request
 ## name: name of the POST field
 ## path: path to the file to add
-## mime: mime-type of the file
-func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream" ) -> HTTPManagerJob:
+## mime: mime-type of the file, use "auto" for mime guessing
+## filename: the filename submitted in the request
+func add_post_buffer( name:String, buffer:PackedByteArray, mime:String="application/octet-stream", filename:String="buffer.bin" ) -> HTTPManagerJob:
 	request_files.append({
 		'name': name,
 		'buffer': buffer,
+		'basename': filename,
 		'mime': mime
 	})
 	
 	return self
 
 
+##add HEADER with ( name:String, value:Varying )
+##or HEADERS with ( headers:Dictionary )
+##returns self for function-chaining
 func add_header( name, value=null ) -> HTTPManagerJob:
 	if name is String and value != null:
 		request_headers[name] = str(value)
@@ -91,7 +103,8 @@ func auth_basic( name:String, password:String ):
 	return self
 
 
-##force a specific mime-type in response
+##turns caching on or off
+##caching must be enabled in HTTPManager to work
 ##returns self for function-chaining
 func cache( _use_cache:bool=true ) -> HTTPManagerJob:
 	use_cache = _use_cache
@@ -120,9 +133,6 @@ func unsafe() -> HTTPManagerJob:
 	return self
 
 
-##add REQUEST a header with ( name:String, value:Varying )
-##or add headers with ( headers:Dictionary )
-##returns self for function-chaining
 ##sends this job to the queue
 ##the response will be saved to a file when successfull
 ## filepath: filepath to where to store the file
@@ -159,34 +169,20 @@ func add_callback( callback = null ) -> HTTPManagerJob:
 	return self
 
 
-##add a callback that will be called when request finished successfull with code 200
+##add a callback that will be called when request finished successfull with code 200 or 304
 func on_success( callback:Callable ) -> HTTPManagerJob:
 	callbacks.append({
-		"result": HTTPRequest.RESULT_SUCCESS,
-		"code": 200,
-		"callback": callback
-	})
-	callbacks.append({
-		"result": HTTPRequest.RESULT_SUCCESS,
-		"code": 304,
+		"success": true,
 		"callback": callback
 	})
 	
 	return self
 
 
-##set a object property with the decoded request result when successfull
+##set a object property with the decoded request result when successful with code 200 or 304
 func on_success_set( object:Object, property:String ) -> HTTPManagerJob:
 	callbacks.append({
-		"result": HTTPRequest.RESULT_SUCCESS,
-		"code": 200,
-		"do": "set",
-		"object": object,
-		"property": property,
-	})
-	callbacks.append({
-		"result": HTTPRequest.RESULT_SUCCESS,
-		"code": 304,
+		"success": true,
 		"do": "set",
 		"object": object,
 		"property": property,
@@ -198,8 +194,7 @@ func on_success_set( object:Object, property:String ) -> HTTPManagerJob:
 ##add a callback that will be called when request fails in any way
 func on_failure( callback:Callable ) -> HTTPManagerJob:
 	callbacks.append({
-		"not_result": HTTPRequest.RESULT_SUCCESS,
-		"not_code": 200,
+		"successful": false,
 		"callback": callback
 	})
 	
@@ -244,12 +239,17 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	var forced_charset:String
 	var response_from_cache:bool
 	
-	#modify response by cahe control
+	#modify response by cacher
 	if _manager.use_cache and use_cache:
 		var cache_result = _manager.cacher.cache_response( self, result, response_code, headers, body )
 		headers = cache_result.headers
 		body = cache_result.body
 		response_from_cache = cache_result.from_cache
+	
+	if response_code == 200:
+		success = true
+	elif response_code == 304 and response_from_cache: 
+		success = true
 	
 	for header in headers:
 		var h = _string_to_header( header )
@@ -264,7 +264,7 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 		response_mime.resize(3)
 		if r and r.strings.size() == 3:
 			response_mime = Array(r.strings)
-		regex.compile("response_charset\\=([-\\d\\w]+)")
+		regex.compile("charset\\=([-\\d\\w]+)")
 		r = regex.search(response_headers["content-type"])
 		if r and r.strings.size() == 2:
 			response_charset = r.strings[1].to_lower()
@@ -321,6 +321,8 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 			file.store_buffer( response.response_body )
 	
 	for cb in callbacks:
+		if cb.has("success") and cb.success != success:
+			continue
 		if cb.has("result") and cb.result != result:
 			continue
 		if cb.has("code") and cb.code != response_code:

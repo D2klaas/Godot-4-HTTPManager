@@ -43,12 +43,21 @@ func dispatch( _job:HTTPManagerJob ):
 		for file in job.request_files:
 			var file_content:PackedByteArray
 			if file.has("path"):
-				file_content = FileAccess.get_file_as_bytes( file.path )
+				if FileAccess.file_exists( file.path ):
+					file_content = FileAccess.get_file_as_bytes( file.path )
+					if file_content.size() == 0:
+						manager.e("POST file size zero")
+				else:
+					manager.e("POST file not found \""+file.path+"\"")
+				
 			if file.has("buffer"):
 				file_content = file.buffer
+				if file_content.size() == 0:
+					manager.e("POST buffer size zero")
+			
 			body.append_array(("--"+manager.content_boundary).to_utf8_buffer())
 			body.append_array("\r\n".to_utf8_buffer())
-			body.append_array(('Content-Disposition: form-data; name="' + file.name +'"; filename="'+file.path.get_file()+'"').to_utf8_buffer())
+			body.append_array(('Content-Disposition: form-data; name="' + file.name +'"; filename="'+file.basename+'"').to_utf8_buffer())
 			body.append_array("\r\n".to_utf8_buffer())
 			body.append_array(("Content-Type: " + file.mime).to_utf8_buffer())
 			body.append_array("\r\n".to_utf8_buffer())
@@ -70,7 +79,7 @@ func dispatch( _job:HTTPManagerJob ):
 	
 	elif job.request_post.size() > 0:
 		var query = manager.query_string_from_dict(job.request_post)
-		job.add_header("Content-Type", "application/x-www-form-urlencoded")
+		job.add_header("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 		job.add_header("Content-Length", str(query.length()) )
 		body = query.to_utf8_buffer()
 	
