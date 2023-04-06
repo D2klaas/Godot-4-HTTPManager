@@ -254,7 +254,7 @@ The manager node that runs the queue
 
 * `cacher = null`\
   _instance of the caching class\
-  on _ready the "HTTPManagerCacher.gd" is used_
+  on ready the "HTTPManagerCacher.gd" is used_
 
 **Signals**
 
@@ -344,7 +344,7 @@ most methods return self for method chaining
   _whether to use cache for this request or not\
   caching must be enabled in manager to be used_
 
-* vmime( mime:String ) -> HTTPManagerJob`\
+* `mime( mime:String ) -> HTTPManagerJob`\
   _forces a specific mime-type to be used on decoding the response of the server_
 
 * `charset( charset:String ) -> HTTPManagerJob`\
