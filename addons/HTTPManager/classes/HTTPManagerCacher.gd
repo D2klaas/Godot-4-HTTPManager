@@ -1,4 +1,4 @@
-extends Object
+extends RefCounted
 
 var manager:HTTPManager
 
