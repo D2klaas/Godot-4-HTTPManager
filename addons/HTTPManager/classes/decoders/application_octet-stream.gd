@@ -1,4 +1,4 @@
-extends Object
+extends RefCounted
 
 var request_url:String
 var request_query:String
