@@ -194,7 +194,7 @@ func on_success_set( object:Object, property:String ) -> HTTPManagerJob:
 ##add a callback that will be called when request fails in any way
 func on_failure( callback:Callable ) -> HTTPManagerJob:
 	callbacks.append({
-		"successful": false,
+		"success": false,
 		"callback": callback
 	})
 	
