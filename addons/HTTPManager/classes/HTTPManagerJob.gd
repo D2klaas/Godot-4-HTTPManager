@@ -118,6 +118,13 @@ func mime( mime:String ) -> HTTPManagerJob:
 	return self
 
 
+##specifies the request method to use
+##returns self for function-chaining
+func method( method:int ) -> HTTPManagerJob:
+	request_method = method
+	return self
+
+
 ##force a specific charset in response
 ##only when response is of mime "text"
 ##returns self for function-chaining
