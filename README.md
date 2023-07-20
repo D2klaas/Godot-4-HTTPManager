@@ -351,6 +351,10 @@ most methods return self for method chaining
   _forces a specific charset to be used on decoding the response of the server\
   only used when decoding text_
 
+* `method( method:int ) -> HTTPManagerJob`\
+  _specifies the request method to use\
+  The methos should be one of the enum-httpclient-method like HTTPClient.METHOD_GET etc._
+
 * `unsafe() -> HTTPManagerJob`\
   _do not validate TLS\
   this makes the call to https more unsafe as the certificate of the server will not be checked_
