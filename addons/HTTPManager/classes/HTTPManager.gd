@@ -62,7 +62,7 @@ class_name HTTPManager
 ## cache directory
 @export var cache_directory:String = "user://http-manager-cache"
 ##automatically go into pause mode when a job failed
-@export var pause_on_failure:bool = true
+@export var pause_on_failure:bool = false
 ##the interval delay to update progress scene and fire progress signal
 @export var signal_progress_interval:float = 0.5
 ##automatically display the progress scene when the queue is progressed
