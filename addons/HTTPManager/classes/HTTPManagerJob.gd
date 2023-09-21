@@ -356,12 +356,13 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	_manager.emit_signal("job_completed",self)
 
 
-
 func _string_to_header( header:String ):
 	var p = header.split(":", false, 1 )
 	if p.size() == 2:
 		p[0] = p[0].to_lower()
-		return p
-	return null
+	
+	if p.size() < 2:
+		p.append("")
+	return p
 
 
