@@ -102,6 +102,7 @@ func _on_pipe_request_completed( result:int, response_code:int, headers:PackedSt
 	#analyse result
 	if result != RESULT_SUCCESS:
 		if manager._retry_on_result.find(result) != -1:
+			manager.d("request failed with result "+manager._result_error_string[result])
 			if retry_job():
 				return
 		else:
@@ -115,7 +116,7 @@ func _on_pipe_request_completed( result:int, response_code:int, headers:PackedSt
 func retry_job():
 	if job.retries >= manager.max_retries:
 		#managed failed here
-		set_completed()
+		manager.d("job could not complete after "+str(manager.max_retries)+" attempts.")
 	else:
 		job.retries += 1
 		manager.d("retry "+str(job.retries)+"/"+str(manager.max_retries)+" job")
