@@ -266,6 +266,7 @@ func _ready():
 		pipe.download_chunk_size = download_chunk_size
 		pipe.max_redirects = max_redirects
 		pipe.use_threads = use_threads
+		pipe.timeout = timeout
 		add_child( pipe )
 
 
