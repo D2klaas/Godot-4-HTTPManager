@@ -99,7 +99,7 @@ func add_header( name, value=null ) -> HTTPManagerJob:
 ##adds auth-basic header to the request
 ##returns self for function-chaining
 func auth_basic( name:String, password:String ):
-	add_header("Authorization:","Basic "+Marshalls.utf8_to_base64(str(name, ":", password)))
+	add_header("Authorization","Basic "+Marshalls.utf8_to_base64(str(name, ":", password)))
 	return self
 
 
