@@ -121,9 +121,12 @@ const _result_error_string = {
 	5: "TLS HANDSHAKE ERROR",
 	6: "NO RESPONSE",
 	7: "BODY SIZE LIMIT EXCEEDED",
-	8: "REQUEST FAILED",
-	11: "REDIRECT LIMIT REACHED",
-	12: "TIMEOUT"
+	8: "BODY DECOMPRESS FAILED",
+	9: "REQUEST FAILED", # Godot 4.1 docs say this is unused but I got it somehow once while testing
+	10: "CANT OPEN DOWNLOAD FILE",
+	11: "DOWNLOAD FILE WRITE ERROR",
+	12: "REDIRECT LIMIT REACHED",
+	13: "TIMEOUT"
 }
 
 const common_mime_types = {
@@ -263,6 +266,7 @@ func _ready():
 		pipe.download_chunk_size = download_chunk_size
 		pipe.max_redirects = max_redirects
 		pipe.use_threads = use_threads
+		pipe.timeout = timeout
 		add_child( pipe )
 
 
