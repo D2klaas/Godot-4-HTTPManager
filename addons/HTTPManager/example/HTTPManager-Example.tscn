@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/HTTPManager/example/HTTPManager-Example.gd" id="1_2hlte"]
 [ext_resource type="Script" path="res://addons/HTTPManager/classes/HTTPManager.gd" id="2_o1fp1"]
-[ext_resource type="Texture2D" uid="uid://dvkfi7xmsxmw1" path="res://icon.svg" id="3_ryo4l"]
+[ext_resource type="Texture2D" uid="uid://bead4mo500aiv" path="res://icon.svg" id="3_ryo4l"]
 
 [node name="HTTPManager-Example" type="Control"]
 layout_mode = 3
@@ -16,7 +16,7 @@ script = ExtResource("1_2hlte")
 [node name="HTTPManager" type="Node" parent="."]
 script = ExtResource("2_o1fp1")
 use_cache = true
-pause_on_failure = false
+accept_cookies = true
 display_progress = true
 print_debug = true
 

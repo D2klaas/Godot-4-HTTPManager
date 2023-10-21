@@ -4,6 +4,7 @@ extends Control
 func _on_button_pressed():
 	$HTTPManager.connect("completed",func(): print("all completed"))
 	
+	
 	$HTTPManager.job(
 		"https://de.wiktionary.org/wiki/Hilfe:Sonderzeichen/Tabelle"
 	).charset(

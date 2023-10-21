@@ -61,6 +61,8 @@ class_name HTTPManager
 @export var use_cache:bool = false
 ## cache directory
 @export var cache_directory:String = "user://http-manager-cache"
+##accept cookies
+@export var accept_cookies:bool = false
 ##automatically go into pause mode when a job failed
 @export var pause_on_failure:bool = false
 ##the interval delay to update progress scene and fire progress signal
@@ -86,6 +88,7 @@ var content_boundary:String = "GodotHTTPManagerContentBoundaryString"
 var _progress_timer:Timer
 var _max_assigned_files:int = 0
 var _progress_scene
+var _cookies:Dictionary
 
 var _mime_decoders:Dictionary
 
@@ -371,6 +374,22 @@ func unpause():
 	dispatch()
 
 
+##cleares all cookies for domains ending with "clear_domain"
+func clear_cookies( clear_domain:String="" ):
+	for domain in _cookies:
+		if domain.ends_with(clear_domain):
+			d(_cookies[domain].size()+" cookies for "+domain+" cleared")
+			_cookies.erase(domain)
+
+
+func set_cookie( value:String, request_url:String ):
+	if not accept_cookies:
+		return
+	var cookie = HTTPManagerCookie.new()
+	cookie.manager = self
+	cookie.parse( value, request_url )
+	
+		
 static func parse_url( url:String ):
 	var result = {
 		"scheme": "__empty__",
@@ -406,5 +425,4 @@ func d( msg ):
 
 static func e( msg ):
 	printerr( "HTTPManager: "+str(msg) )
-
 

@@ -25,6 +25,8 @@ func dispatch( _job:HTTPManagerJob ):
 	var url = job.get_url()
 	
 	manager.d("starting request "+url)
+
+
 	
 	var method:int = HTTPClient.METHOD_GET
 	if job.request_method == -1:
@@ -87,6 +89,35 @@ func dispatch( _job:HTTPManagerJob ):
 	if job.request_headers.size() > 0:
 		for h in job.request_headers:
 			headers.append( h + ": " + job.request_headers[h] )
+
+	#cookie headers
+	if manager.accept_cookies:
+		var cookie_data:String
+		var regex = RegEx.new()
+		#this regex could be better
+		regex.compile("(http[s]?):\\/\\/([^\\/]+)[:\\d*]?(\\/.*)")
+		var res = regex.search(url)
+		if res:
+			var request_protocol = res.strings[1]
+			var request_domain = res.strings[2]
+			var request_path = res.strings[3]
+
+			#check cookie domain
+			for domain in manager._cookies:
+				if request_domain.ends_with(domain):
+					#expire cookies befor beign used
+					for cookie_name in manager._cookies[domain]:
+						var cookie = manager._cookies[domain][cookie_name]
+						if cookie.expires > -1 and cookie.expires < Time.get_unix_time_from_system():
+							manager._cookies[domain].erase(cookie_name)
+					
+					#check path
+					for cookie_name in manager._cookies[domain]:
+						var cookie = manager._cookies[domain][cookie_name]
+						cookie_data += cookie.apply_if_valid(request_protocol,request_domain,request_path)
+		
+		if cookie_data.length() > 0:
+			headers.append("Cookie: "+cookie_data)
 	
 	if job.unsafe_ssl:
 		set_tls_options ( TLSOptions.client_unsafe() )

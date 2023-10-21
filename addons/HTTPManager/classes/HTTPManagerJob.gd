@@ -261,7 +261,11 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	for header in headers:
 		var h = _string_to_header( header )
 		if h:
-			response_headers[h[0].to_lower()] = h[1]
+			var header_name:String = h[0].to_lower() 
+			match header_name:
+				"set-cookie":
+					_manager.set_cookie(h[1],url)
+			response_headers[header_name] = h[1]
 	
 	if response_headers.has("content-type"):
 		var regex = RegEx.new()
