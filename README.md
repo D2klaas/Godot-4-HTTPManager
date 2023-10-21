@@ -11,6 +11,7 @@ A feature rich Godot HTTP manager addon
 * custom decoders for mime-types
 * automatic progress display
 * web cache based on etag and modified-since headers
+* NEW: basic cookie support (this adds support for PHP sessions)
 
 ## Install
 Download files and add them to your addons folder in your godot project.\
@@ -233,6 +234,9 @@ The manager node that runs the queue
   
 * `use_cache:bool = false`\
   _use caching_
+
+* `accept_cookies:bool = false`\
+  _This enables support for cookies. Cookies are the preferred method used to make persistend server-side sessions. Basicly this enables the HTTPManager to work with server sessions. The implemenetation isn't feature complete. Be careful when using it as wrongly directed cookies may be used to take over sessions. The risk should be minimal if you only connect to your own servers. Teh cookies are not stored between application start. Every launch of your app is a clean new start._
 
 * `cache_directory:String = "user://http-manager-cache"`\
   _cache directory_
