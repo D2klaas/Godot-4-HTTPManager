@@ -236,7 +236,7 @@ The manager node that runs the queue
   _use caching_
 
 * `accept_cookies:bool = false`\
-  _This enables support for cookies. Cookies are the preferred method used to make persistend server-side sessions. Basicly this enables the HTTPManager to work with server sessions. The implemenetation isn't feature complete. Be careful when using it as wrongly directed cookies may be used to take over sessions. The risk should be minimal if you only connect to your own servers. The cookies are not stored between application start. Coookies are only storred inside the HTTPManager object. Every launch of your app is a clean new start._
+  _This enables support for cookies. Cookies are the preferred method used to make persistend server-side sessions. Basicly this enables the HTTPManager to work with server sessions. The implemenetation isn't feature complete. Be careful when using it as wrongly directed cookies may be used to take over sessions. Consider setting max_redirects to 0 to avoid this scenario. The risk should be minimal if you only connect to your own servers. The cookies are not stored between application start. Coookies are only storred inside the HTTPManager object. Every launch of your app is a clean new start._
 
 * `cache_directory:String = "user://http-manager-cache"`\
   _cache directory_
@@ -300,6 +300,9 @@ The manager node that runs the queue
 
 * `unpause()`\
   _resumes queue processing_
+
+* `clear_cookies( clear_domain:String="" )`\
+  _cleares all cookies for domains ending with clear_domain_
 
 ### HTTPManagerJob
 A http request object that will be stored in the queue
