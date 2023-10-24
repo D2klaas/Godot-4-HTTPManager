@@ -1,10 +1,10 @@
 [![version](https://img.shields.io/badge/plugin%20version-0.4.0-blue)](https://github.com/D2klaas/Godot-4-HTTPManager)
 # Godot 4 - HTTPManager
-A feature rich Godot HTTP manager addon
+A feature-rich Godot HTTP manager addon
 
 ## Features
 * multiple simultaneous requests
-* queue managment
+* queue management
 * add GET and POST variables
 * add upload files or buffers via POST request
 * decodes response based on mime-type
@@ -15,11 +15,11 @@ A feature rich Godot HTTP manager addon
 
 ## Install
 Download files and add them to your addons folder in your godot project.\
-Enable the plugin in prohect-settings.
+Enable the plugin in project-settings.
 
 ## Usage
 Create a HTTPManager node in your scene-tree\
-($HTTPManager referres to the created node)
+($HTTPManager refers to the created node)
 
 <details>
 <summary>Simple example</summary>
@@ -57,8 +57,8 @@ $HTTPManager.job(
 func _on_completed( result ):
 	var img = result.fetch()
 	# when the web server sends the correct mime-type 
-	# the file get decoded as image and can be used immediately in godot
-	# if the image is corrupt or not an image recognised by godot the decoder returns null
+	# the file get decoded as an image and can be used immediately in godot
+	# if the image is corrupt or not an image recognized by godot the decoder returns null
 	if img:
 		#do something with this image
 		pass
@@ -82,7 +82,7 @@ func _on_completed( result ):
 	var img = result.fetch()
 	# the call forces the result to be an image
 	# if the file is corrupt or not an image you get null on fetch
-	# the file get decoded as image and can be used immediately in godot
+	# the file gets decoded as an image and can be used immediately in godot
 	if img:
 		#do something with this image
 		pass
@@ -155,7 +155,7 @@ $HTTPManager.job(
 <summary>Add credencials to the request</summary>
 
 ```
-$HTTPManager.job( #auth basic credencials should only be send via https as the are send in plain-text!
+$HTTPManager.job( #auth basic credentials should only be sent via https as they are sent in plain-text!
 	"https://www.foo.bar/search"
 ).auth_basic(
 	"username","password" 
@@ -181,22 +181,22 @@ Returns a string or null on fetch().\
 Supported charset formats are asccii, utf-8, utf-16, utf-32\
 
 ### image/*
-Tries to decode the result as image.\
-Returns a Image or null on fetch().\
+Tries to decode the result as an image.\
+Returns an Image or null on fetch().\
 Supported formats are png, jpg, tga, bmp, webp
 
 ### image/texture
-Tries to decode the result as image.\
+Tries to decode the result as an image.\
 Then constructs a texture from the image.\
 Returns a Texture or null on fetch().\
 **!!You have to force the mime-type "image/texture"**\
 .mime( "image/texture" )
 
 ## Make custom mime decoder
-Add a scriptfile in the addons/HTTPManager/decoders folder\
+Add a script file in the addons/HTTPManager/decoders folder\
 Name it "mediatype_subtype.gd"\
 If you name it "application_custom.gd" the decoder will be evoked when effective mime is "application/custom"\
-If you name it "application.gd" the decoder will be evoked when mime is from mediatype "application", but will not be used when there is the more specific decoder "application_custom" is present.\
+If you name it "application.gd" the decoder will be evoked when mime is from media type "application", but will not be used when there is a more specific decoder "application_custom" is present.\
 The script should extend "res://addons/HTTPManager/classes/decoders/application_octet-stream.gd" or any usefull subclass\
 You should overwrite the fetch() function with your decoding. Have a look into the existing decoders (especially image_texture.gd for forced mime-types)
 
@@ -230,25 +230,25 @@ The manager node that runs the queue
   _If set to a value greater than 0.0 before the request starts, the HTTP request will time out after timeout seconds have passed and the request is not completed yet. For small HTTP requests such as REST API usage, set timeout to a value between 10.0 and 30.0 to prevent the application from getting stuck if the request fails to get a response in a timely manner. For file downloads, leave this to 0.0 to prevent the download from failing if it takes too much time._
 
 * `max_retries:int = 3`\
-  _maximal times the manager retries to request the job after failed connection_
+  _maximal times the manager retries to request the job after a failed connection_
   
 * `use_cache:bool = false`\
   _use caching_
 
 * `accept_cookies:bool = false`\
-  _This enables support for cookies. Cookies are the preferred method used to make persistend server-side sessions. Basicly this enables the HTTPManager to work with server sessions. The implemenetation isn't feature complete. Be careful when using it as wrongly directed cookies may be used to take over sessions. Consider setting max_redirects to 0 to avoid this scenario. The risk should be minimal if you only connect to your own servers. The cookies are not stored between application start. Coookies are only storred inside the HTTPManager object. Every launch of your app is a clean new start._
+  _This enables support for cookies. Cookies are the preferred method used to make persistent server-side sessions. Basically this enables the HTTPManager to work with server sessions. The implementation isn't featured as complete. Be careful when using it as wrongly directed cookies may be used to take over sessions. Consider setting max_redirects to 0 to avoid this scenario. The risk should be minimal if you only connect to your own servers. The cookies are not stored between application start. Cookies are only stored inside the HTTPManager object. Every launch of your app is a clean new start._
 
 * `cache_directory:String = "user://http-manager-cache"`\
   _cache directory_
   
 * `pause_on_failure:bool = true`\
-  _automatically go into pause mode when a job failed_
+  _automatically goes into pause mode when a job failed_
   
 * `signal_progress_interval:float = 0.5`\
   _the interval delay to update progress scene and fire progress signal_
 
 * `display_progress:bool = false`\
-  _automatically display the progress scene when the queue is progressed_
+  _automatically displays the progress scene when the queue has progressed_
 
 * `progress_scene:PackedScene = null`\
   _custom scene to display when the queue is progressed_
@@ -266,7 +266,7 @@ The manager node that runs the queue
   _emited when the manager goes into pause mode_
   
 * `unpaused()`\
-  _emited when the manager unpause and resumes the queue_
+  _emited when the manager unpauses and resumes the queue_
 
 * `completed()`\
   _emited when all jobs in the queue has finished_
@@ -275,7 +275,7 @@ The manager node that runs the queue
   _emited when progressed interval fires\
   assigned_files before last completed or clear has been reached/called\
   current_files number of files still in cue\
-  total_bytes to download of all jobs currently worked on\
+  total_bytes to download all jobs currently worked on\
   current_bytes downloaded of all jobs currently worked on_
   
 * `job_failed( job:HTTPManagerJob )`\
@@ -296,7 +296,7 @@ The manager node that runs the queue
 
 * `pause()`\
   _pauses queue execution\
-  running requests will complete but no further requests will be started_
+  running requests will be complete but no further requests will be started_
 
 * `unpause()`\
   _resumes queue processing_
@@ -309,7 +309,7 @@ A http request object that will be stored in the queue
 
 **Properties**
 
-there are no properties intended do be changed, use the appropriate functions instead
+there are no properties intended to be changed, use the appropriate functions instead
 
 **Signals**
 
@@ -327,7 +327,7 @@ most methods return self for method chaining
 
 * `func add_post( name, value=null ) -> HTTPManagerJob`\
   _adds a POST field to the request\
-  you can add fields with name of field an value of field\
+  you can add fields with the name of field and value of field\
   or a Dictionary containing fieldname:fieldvalue pairs\
   add_get( "fieldname", "fieldvalue" ) or add_get( {"fieldname":"fieldvalue"} )_
 
@@ -349,7 +349,7 @@ most methods return self for method chaining
 
 * `cache( use_cache:bool=true ) -> HTTPManagerJob`\
   _whether to use cache for this request or not\
-  caching must be enabled in manager to be used_
+  caching must be enabled in the manager to be used_
 
 * `mime( mime:String ) -> HTTPManagerJob`\
   _forces a specific mime-type to be used on decoding the response of the server_
@@ -360,7 +360,7 @@ most methods return self for method chaining
 
 * `method( method:int ) -> HTTPManagerJob`\
   _specifies the request method to use\
-  The methos should be one of the enum-httpclient-method like HTTPClient.METHOD_GET etc._
+  The method should be one of the enum-httpclient-method like HTTPClient.METHOD_GET etc._
 
 * `unsafe() -> HTTPManagerJob`\
   _do not validate TLS\
@@ -414,9 +414,9 @@ The object provides the following informations:\
 * `response_headers:Dictionary`
 * `response_body:PackedByteArray`
 * `response_mime:Array`\
-  the orginal mimetype of the response
+  the original mimetype of the response
 * `response_charset:String`\
-  the original charste of the response
+  the original charset of the response
 ---
 * `forced_mime:Array[String]`
   mime-type forced by job
