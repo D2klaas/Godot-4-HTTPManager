@@ -16,8 +16,8 @@ script = ExtResource("1_2hlte")
 [node name="HTTPManager" type="Node" parent="."]
 script = ExtResource("2_o1fp1")
 use_cache = true
-accept_cookies = true
 display_progress = true
+accept_cookies = true
 print_debug = true
 
 [node name="Button" type="Button" parent="."]

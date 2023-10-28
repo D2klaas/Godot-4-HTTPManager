@@ -6,6 +6,8 @@
 export.cfg
 export_presets.cfg
 project.godot
+icon.svg
+icon.svg.import
 
 # Imported translations (automatically generated from CSV files)
 *.translation
