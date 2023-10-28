@@ -16,6 +16,7 @@ var unsafe_ssl:bool =false
 var force_mime:String
 var force_charset:String
 var use_cache:bool = true
+var use_proxy:bool = false
 
 var retries:int = 0
 var success:bool = false
