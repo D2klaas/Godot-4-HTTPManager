@@ -12,6 +12,9 @@ A feature-rich Godot HTTP manager addon
 * automatic progress display
 * web cache based on etag and modified-since headers
 * NEW: basic cookie support (this adds support for PHP sessions)
+* Godot 4.2 compatible
+
+ :warning: **Breaking change**: Due to a naming collision with Godot's base object the get() function was renamed to fetch()!!!
 
 ## Install
 Download files and add them to your addons folder in your godot project.\
@@ -33,7 +36,7 @@ $HTTPManager.job(
 	"https://filesamples.com/samples/code/html/sample1.html"
 ).on_success( #adds a callback that will be fired on success
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -68,7 +71,7 @@ $HTTPManager.job(
 	"https://filesamples.com/samples/image/jpg/sample_640%C3%97426.jpg"
 ).on_success( 
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -94,7 +97,7 @@ $HTTPManager.job(
 	"image/jpeg"
 ).on_success( 
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -110,7 +113,7 @@ $HTTPManager.job(
 	"g", "term" 
 ).on_success( 
 	self._on_completed
-).get()
+).fetch()
 
 
 $HTTPManager.job(
@@ -127,7 +130,7 @@ $HTTPManager.job(
 	"post_fieldname2": "post_fieldvalue 2", 
 }).on_success( 
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -145,7 +148,7 @@ $HTTPManager.job(
 	"avatar","myface.jpg", "image/jpeg" 
 ).on_success( 
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -161,7 +164,7 @@ $HTTPManager.job( #auth basic credentials should only be sent via https as they 
 	"username","password" 
 .on_success( 
 	self._on_completed
-).get()
+).fetch()
 ```
 
 </details>
@@ -384,7 +387,7 @@ most methods return self for method chaining
 * `on_result( result:int, callback:Callable ) -> HTTPManagerJob`\
   _adds callback to be fired when connections result is result_
  
-* `get( callback = null )`\
+* `fetch( callback = null )`\
   _send the job to the queue and start dispatching\
   a callback can be added thats fires on completion (like add_callback) whether call is successful or not_
 
