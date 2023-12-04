@@ -14,7 +14,7 @@ A feature-rich Godot HTTP manager addon
 * NEW: basic cookie support (this adds support for PHP sessions)
 * Godot 4.2 compatible
 
- :warning: **Breaking change**: Due to a naming collision with Godot's base object the get() function was renamed to fetch()!!!
+ :warning: **Breaking change**: Due to a naming collision with Godot's base object the HTTPManagerJob.get() function was renamed to HTTPManagerJob.fetch()!!!
 
 ## Install
 Download files and add them to your addons folder in your godot project.\
