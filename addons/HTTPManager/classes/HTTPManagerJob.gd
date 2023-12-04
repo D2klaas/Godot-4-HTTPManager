@@ -156,7 +156,7 @@ func download( filepath:String, callback = null ):
 
 ##sends this job to the queue
 ## callback: a callable that will be called when job completes
-func get( callback = null ):
+func fetch( callback = null ):
 	if callback is Callable:
 		callbacks.append({
 			"callback": callback
