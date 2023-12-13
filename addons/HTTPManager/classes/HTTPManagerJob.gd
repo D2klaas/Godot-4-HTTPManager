@@ -286,9 +286,10 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 		regex.compile("(\\w+)\\/(\\w+)")
 		var r = regex.search(force_mime)
 		forced_mime = Array()
-		forced_mime.resize(3)
 		if r and r.strings.size() == 3:
 			forced_mime = Array(r.strings)
+		else:
+			forced_mime = Array()
 	
 	if force_charset != "":
 		forced_charset = force_charset

@@ -4,6 +4,7 @@ extends Control
 func _on_button_pressed():
 	$HTTPManager.connect("completed",func(): print("all completed"))
 	
+	$HTTPManager.job("https://cdn2.thecatapi.com/images/ld.jpg").mime("image/*").on_success(func(response): print("all completed")).fetch()
 	
 	$HTTPManager.job(
 		"https://de.wiktionary.org/wiki/Hilfe:Sonderzeichen/Tabelle"
