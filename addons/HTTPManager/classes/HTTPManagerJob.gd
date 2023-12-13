@@ -289,6 +289,7 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 		if r and r.strings.size() == 3:
 			forced_mime = Array(r.strings)
 		else:
+			printerr("HTTPManager: '",force_mime,"' is not a valid mime-type and will be ignored")
 			forced_mime = Array()
 	
 	if force_charset != "":
