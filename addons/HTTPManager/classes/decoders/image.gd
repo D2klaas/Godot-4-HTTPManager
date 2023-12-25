@@ -1,14 +1,15 @@
-extends "res://addons/HTTPManager/classes/decoders/application_octet-stream.gd"
+class_name ImageDecoder
+extends BaseDecoder
 
 
-func fetch():
-	var mime = response_mime
+func fetch() -> Variant:
+	var mime := response_mime
 	if forced_mime.size() == 3:
 		mime = forced_mime
 	return as_image( mime )
 
 
-func as_image( mime ):
+func as_image( mime:Array ) -> Image:
 	var img:Image = Image.new()
 	match mime[2].to_lower():
 		"png":
