@@ -1,7 +1,7 @@
 extends RefCounted
 class_name HTTPManagerJob
 
-var _manager
+var _manager:HTTPManager
 
 var url:String
 var request_method:int = -1
@@ -295,7 +295,7 @@ func dispatch( result:int, response_code:int, headers:PackedStringArray, body:Pa
 	if force_charset != "":
 		forced_charset = force_charset
 	
-	var response = null
+	var response:BaseDecoder
 	var mime = ["","",""]
 	if response_mime.size() == 3:
 		mime = response_mime

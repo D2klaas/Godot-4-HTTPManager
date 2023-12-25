@@ -1,3 +1,4 @@
+class_name BaseDecoder
 extends RefCounted
 
 var request_url:String
@@ -18,5 +19,5 @@ var response_charset:String
 var forced_mime:Array[String]
 var forced_charset:String
 
-func fetch():
+func fetch() -> Variant:
 	return response_body

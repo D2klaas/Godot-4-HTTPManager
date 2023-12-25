@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/HTTPManager/classes/HTTPManager.gd" id="2_o1fp1"]
 [ext_resource type="Texture2D" uid="uid://bead4mo500aiv" path="res://icon.svg" id="3_ryo4l"]
 
-[node name="HTTPManager-Example" type="Control"]
+[node name="HTTPManager-Example" type="Control" node_paths=PackedStringArray("http_manager")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2hlte")
+http_manager = NodePath("HTTPManager")
 
 [node name="HTTPManager" type="Node" parent="."]
 script = ExtResource("2_o1fp1")
